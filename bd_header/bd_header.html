@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="./vuetify.min.css"
+      rel="stylesheet"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+    />
+    <link rel="stylesheet" href="./hoverColor.css" />
+    <script src="./vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <v-app>
+        <div>
+          <!-- app-bar -->
+          <v-app-bar app color="#FFD600">
+            <v-img
+              src="http://fs.budingcc.cn/group1/M00/00/01/dU4Lkl5Z4gaARRh2AAB2yUb3OE0091.png"
+              max-width="50px"
+            ></v-img>
+            <v-toolbar-items class="hidden-xs-only">
+              <v-btn text>校园二手</v-btn>
+              <v-btn text>表白墙</v-btn>
+              <v-btn text>学习管理</v-btn>
+              <v-btn text>布叮记词</v-btn>
+            </v-toolbar-items>
+            <div class="flex-grow-1"></div>
+            <div style="position:relative;">
+              <v-img
+                v-if="login"
+                @click="navShow = !navShow"
+                src="http://fs.budingcc.cn/group1/M00/00/00/dU4Lkl5OjIeAG6SWAABMN7CE7-U017.jpg"
+                width="50px"
+                height="50px"
+                style="border-radius:50%;"
+                class="elevation-5"
+              ></v-img>
+              <v-row v-else align="center">请登录！</v-row>
+            </div>
+          </v-app-bar>
+          <!-- navigation -->
+          <v-navigation-drawer
+            app
+            right
+            color="#FFC400"
+            v-model="navShow"
+            v-if="login"
+          >
+            <v-list>
+              <v-list-item
+                v-for="item in navDrawerList"
+                :key="item.id"
+                link
+                @click="$router.push(item.href)"
+              >
+                <v-list-item-icon>
+                  <v-icon>{{ item.icon }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+            <template v-slot:append>
+              <div class="pa-2">
+                <v-btn block color="#FFE57F" @click="logout">注销</v-btn>
+              </div>
+            </template>
+          </v-navigation-drawer>
+        </div>
+        <v-img
+          src="http://fs.budingcc.cn/group1/M00/00/01/dU4Lkl5aC7CAC-S9AA2daI9CCPk851.jpg"
+          class="bdBackground"
+          height="100%"
+          width="100%"
+        ></v-img>
+        <!-- 详情页部分 -->
+        <v-container class="mx-auto d-flex fill-height">
+          <v-row class="mx-auto d-flex" align="center">
+            <v-col>
+              <v-card max-width="640px" class="mx-auto" elevation="12">
+                <template>
+                  <v-carousel height="360px" cycle interval="3000">
+                    <v-carousel-item
+                      :src="'http://fs.budingcc.cn/' + src"
+                      v-for="(src,i) in '${imageUrl}'.split(',')"
+                      :key="i"
+                    ></v-carousel-item>
+                  </v-carousel>
+                </template>
+              </v-card>
+            </v-col>
+            <v-col>
+              <v-card
+                elevation="12"
+                width="400px"
+                class="mx-auto"
+                style="opacity:.8"
+              >
+                <v-card-title>商品详情</v-card-title>
+                <v-card-text>
+                  <v-row>
+                    <nav
+                      class="menu menu--adsila"
+                      style="color:black;width:100%;"
+                    >
+                      <span class="menu__item">
+                        <span class="menu__item-name">名称：</span>
+                        <span class="menu__item-label">${goodName}</span>
+                      </span>
+                      <span class="menu__item">
+                        <span class="menu__item-name">价格：</span>
+                        <span class="menu__item-label">¥${price}</span>
+                      </span>
+                      <span class="menu__item">
+                        <span class="menu__item-name">卖家：</span>
+                        <span class="menu__item-label">${userName}</span>
+                      </span>
+                      <span class="menu__item">
+                        <span class="menu__item-name">描述：</span>
+                        <span
+                          class="menu__item-label"
+                          style="word-break: break-all;"
+                          >${description}</span
+                        >
+                      </span>
+                    </nav>
+                  </v-row>
+                  <v-row class="d-flex">
+                    <v-col cols="8"></v-col>
+                    <v-col>
+                      <v-row>
+                        <v-btn
+                          color="#FFD600"
+                          fab
+                          class="pa-2"
+                          @click="heartClick"
+                        >
+                          <v-icon :color="heart?'red':'black'"
+                            >mdi-heart</v-icon
+                          >
+                        </v-btn>
+                        <div class="flex-grow-1"></div>
+                        <v-btn
+                          color="primary"
+                          fab
+                          class="pa-2"
+                          @click="toChat(item.user_name,item.user_id)"
+                        >
+                          <v-icon>mdi-chat</v-icon>
+                        </v-btn>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-app>
+    </div>
+    <style>
+      [v-cloak] {
+        display: none;
+      }
+      * {
+        font-family: "Microsoft YaHei", "youyuan";
+      }
+      .bdBackground {
+        position: fixed !important;
+        opacity: 0.7;
+      }
+    </style>
+    <script>
+      new Vue({
+        el: "#app",
+        vuetify: new Vuetify(),
+        components: {},
+        mounted() {},
+        beforeMount() {},
+        beforeCreate() {},
+        created() {},
+        data() {
+          return {
+            heart: false,
+            good: {
+              imageUrl:
+                "group1/M00/00/00/dU4Lkl5ZF-OAago3AAQeOvTYbxw364.png,group1/M00/00/00/dU4Lkl5ZF-2AC6xNAASTMaEo31I669.png",
+              goodName: "伊卡洛斯测试",
+              userName: "Ikaros",
+              description: "我老婆",
+              price: "50"
+            },
+            user: {},
+            item: {
+              collection: false
+            },
+            navShow: false,
+            user: {},
+            navDrawerList: [
+              {
+                id: 1,
+                href: "/user/center",
+                icon: "mdi-account",
+                title: "个人中心"
+              },
+              {
+                id: 2,
+                href: "/user/collection",
+                icon: "mdi-heart",
+                title: "我的收藏"
+              },
+              {
+                id: 3,
+                href: "/user/dialog",
+                icon: "mdi-chat",
+                title: "我的聊天"
+              },
+              {
+                id: 4,
+                href: "/user/publish",
+                icon: "mdi-equalizer",
+                title: "我的发布"
+              },
+              {
+                id: 5,
+                href: "/good/add",
+                icon: "mdi-arrow-up",
+                title: "发布商品"
+              }
+            ],
+            login: true
+          };
+        },
+        methods: {
+          heartClick() {},
+          logout() {
+            var _this = this;
+            this.$axios({
+              method: "delete",
+              url: "/user/logout"
+            })
+              .then(result => {
+                sessionStorage.removeItem("loginInfo");
+                _this.$router.push({ path: "/login" });
+                _this.tipShow("注销成功");
+                _this.$socket.disconnect();
+              })
+              .catch(err => {
+                _this.tipShow("注销失败", "error");
+              });
+          },
+          getNavData(i) {
+            var _this = this;
+            this.$axios({
+              method: "get",
+              url: "/dict?dict_type_code=" + i
+            })
+              .then(res => {
+                if (i == 1) {
+                  _this.navData1 = res.data;
+                } else {
+                  _this.navData2 = res.data;
+                }
+              })
+              .catch(error => {});
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
