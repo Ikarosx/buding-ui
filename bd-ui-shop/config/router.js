@@ -25,19 +25,15 @@ router.beforeEach((to, from, next) => {
         sessionStorage.setItem("token", result.access_token);
         next();
       } else {
-        if (to.path == "/login" || to.path == "/logout") {
-          next();
-        } else {
-          //跳转到统一登陆
-          // next({path: "/login"})
-          window.location =
-            "http://oauth.budingcc.cn:40000/oauth/authorize?" +
-            "client_id=webBuding&" +
-            "redirect_uri=http://admin.budingcc.cn:40010/oauth/callback&" +
-            "response_type=code&" +
-            "state=" +
-            window.location.href;
-        }
+        //跳转到统一登陆
+        // next({path: "/login"})
+        window.location =
+          "http://oauth.budingcc.cn:40000/oauth/authorize?" +
+          "client_id=webBuding&" +
+          "redirect_uri=http://admin.budingcc.cn:40010/oauth/callback&" +
+          "response_type=code&" +
+          "state=" +
+          window.location.href;
       }
     })
     .catch(err => {
@@ -93,15 +89,20 @@ axios.interceptors.response.use(data => {
   console.log(data);
   if (data && data.data) {
     if (data.data.code && data.data.code == "40001") {
-      loginApi.logout().then((result) => {
-        if(result.success){
-          window.location.href = "http://oauth.budingcc.cn:40000/logout?redirect_uri=" + window.location.href;
-        }else{
+      loginApi
+        .logout()
+        .then(result => {
+          if (result.success) {
+            window.location.href =
+              "http://oauth.budingcc.cn:40000/logout?redirect_uri=" +
+              window.location.href;
+          } else {
+            this.$snackbar.error("注销失败");
+          }
+        })
+        .catch(err => {
           this.$snackbar.error("注销失败");
-        }
-      }).catch((err) => {
-        this.$snackbar.error("注销失败");
-      });
+        });
     } else if (data.data.code && data.data.code == "10002") {
       Message.error("您没有此操作的权限，请与客服联系！");
     } else if (data.data.code && data.data.code == "10003") {
