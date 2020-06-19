@@ -1,12 +1,17 @@
 import http from "./public";
 import { systemConfig } from "@/../config/system";
-let apiUrl = systemConfig.bdApiUrl;
+let adminApiUrl = systemConfig.adminApiUrl;
+let gatewayApiUrl = systemConfig.gatewayApiUrl;
 
 /*退出*/
 export const logout = params => {
-  return http.requestPost("http://admin.budingcc.cn:40010/oauth/logout");
+  return http.requestPost(adminApiUrl + "/oauth/logout");
 };
 
 export const listSchools = () => {
-  return http.requestGet(apiUrl + "/api/ucenter/school/list");
+  return http.requestGet(gatewayApiUrl + "/api/ucenter/school/list");
+};
+
+export const getAccessToken = () => {
+  return http.requestGet(adminApiUrl + "/oauth/jwt");
 };

@@ -95,7 +95,7 @@
                 </v-btn>
               </v-row>
               <v-row>
-                <v-col v-for="(good,index) in pageResult.items" :key="good.id">
+                <v-col v-for="(good) in pageResult.items" :key="good.id">
                   <v-hover v-slot:default="{hover}">
                     <v-card
                       flat

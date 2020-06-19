@@ -19,7 +19,7 @@
                           <template>
                             <v-list-item-avatar>
                               <v-img
-                                src="http://fs.budingcc.cn:8888/group1/M00/00/00/dU4Lkl5OjIeAG6SWAABMN7CE7-U017.jpg"
+                                src="http://n.sinaimg.cn/sinacn/w800h755/20171206/ef92-fypikwu3264849.png"
                               ></v-img>
                             </v-list-item-avatar>
                             <v-list-item-content>
@@ -49,22 +49,30 @@
                       v-for="(message,index) in history[currentMessageIndex].messages"
                       :key="index"
                     >
-                      <v-list-item-avatar v-show="message.send_user_id!=user.sid">
-                        <v-img :src="history[currentMessageIndex].profile_photo"></v-img>
+                      <v-list-item-avatar v-show="message.fromUser!=user.student_id">
+                        <v-img :src="history[currentMessageIndex].user_pic"></v-img>
                       </v-list-item-avatar>
                       <v-list-item-content>
                         <v-list-item-title
-                          :class="{'text-right':message.send_user_id==user.sid}"
-                        >{{message.message_content}}</v-list-item-title>
+                          :class="{'text-right':message.fromUser==user.student_id}"
+                        >
+                          <v-progress-circular
+                            indeterminate
+                            v-if="!message.ack"
+                            color="green"
+                            size="25"
+                          ></v-progress-circular>
+                          {{message.message}}
+                        </v-list-item-title>
                       </v-list-item-content>
-                      <v-list-item-avatar v-show="message.send_user_id==user.sid">
-                        <v-img :src="user.profile_photo"></v-img>
+                      <v-list-item-avatar v-show="message.fromUser==user.student_id">
+                        <v-img :src="user.user_pic"></v-img>
                       </v-list-item-avatar>
                     </v-list-item>
                   </v-card-text>
                   <v-divider></v-divider>
                   <v-text-field
-                    v-model.trim="message.message_content"
+                    v-model.trim="message.message"
                     placeholder="ENTER发送消息"
                     solo
                     @keydown.enter="sendMessage"
@@ -90,7 +98,8 @@
 <script>
 import $qs from "qs";
 import Vue from "vue";
-// import VueSocketIO from "vue-socket.io";
+import VueSocketIO from "vue-socket.io";
+import * as userApi from "../api";
 export default {
   name: "chat",
   created() {
@@ -102,6 +111,13 @@ export default {
     // this.history = $qs.parse(localStorage.getItem("history-" + this.user.sid));
   },
   mounted() {
+    let user = localStorage.getItem("user");
+    let userJson = JSON.parse(user);
+    this.user = userJson;
+
+    if (this.$socket.disconnected) {
+      this.$socket.connect();
+    }
     // window.addEventListener("beforeunload", e => this.beforeunloadFn(e));
     // this.resetSetItem(
     //   "unRead",
@@ -124,73 +140,95 @@ export default {
       user: {
         nickName: "Ikaros"
       },
-      currentMessageIndex: 0,
-      //   this.$route.params.user_id
-      //     ? this.$route.params.user_id
-      //     : 0,
+      currentMessageIndex: this.$route.params.user_id
+        ? this.$route.params.user_id
+        : 0,
       message: {
-        message_id: null,
-        message_content: null,
-        message_time: null,
-        send_user_id: null,
-        receive_user_id: this.$route.params.user_id
-          ? this.$route.params.user_id
-          : 0,
-        message_read: null
+        id: null,
+        message: null,
+        time: null,
+        fromUser: null,
+        toUser: this.$route.params.user_id ? this.$route.params.user_id : 0,
+        read: null
       },
-      history: [
-        {
-          nickName: "杨佩斯"
+      history: {
+        0:{
+          nickName:"布叮校园",
+          unread:0,
+           user_pic:
+             "https://img.shixijob.net/ciwei_ALD_sys/159119076455364ca6bc7-7dc4-4dbc-8010-ef2a73f8be61.png",
         }
-      ]
+        // 17551119044: {
+        //   nickName: "杨佩斯",
+        //   unread: 0,
+        //   user_pic:
+        //     "https://img.shixijob.net/ciwei_ALD_sys/159119076455364ca6bc7-7dc4-4dbc-8010-ef2a73f8be61.png",
+        //   messages: [
+        //     {
+        //       id: 1,
+        //       fromUser: 17551119111,
+        //       toUser: 17551119044,
+        //       message: "111",
+        //       ack: false
+        //     },
+        //     {
+        //       id: 2,
+        //       fromUser: 17551119044,
+        //       toUser: 17551119111,
+        //       message: "222",
+        //       ack: true
+        //     }
+        //   ]
+        // }
+      }
     };
   },
   sockets: {
-    receiveMessage(data) {
-      var _this = this;
-      if (this.history[data.send_user_id]) {
-        if (!this.history[data.send_user_id].messages) {
-          this.history[data.send_user_id].messages = [];
+    receive_message: function(data) {
+      data.ack = true;
+      if (this.history[data.fromUser]) {
+        if (!this.history[data.fromUser].messages) {
+          this.history[data.fromUser].messages = [];
         }
-        var message_id = data.message_id;
-        delete this.history[data.send_user_id].messages[undefined];
-        var msgLength = Object.keys(this.history[data.send_user_id].messages)
-          .length;
-        Vue.set(this.history[data.send_user_id].messages, msgLength, data);
-        if (data.send_user_id != this.currentMessageIndex) {
-          this.history[data.send_user_id].unread =
-            parseInt(this.history[data.send_user_id].unread) + 1;
+        var message_id = data.id;
+        delete this.history[data.fromUser].messages[undefined];
+        this.history[data.fromUser].messages.push(data);
+        if (data.fromUser != this.currentMessageIndex) {
+          this.history[data.fromUser].unread =
+            parseInt(this.history[data.fromUser].unread) + 1;
         }
       } else {
-        this.$axios({
-          method: "get",
-          url: "/user/profile/" + data.send_user_id
-        })
+        console.log("新发来消息的用户不存在于对话框");
+        userApi
+          .getUserProfile(data.fromUser)
           .then(result => {
-            Vue.set(_this.history, data.send_user_id, {
-              sid: data.send_user_id,
-              nickname: result.data.nick_name,
-              profile_photo: result.data.profile_photo,
-              messages: [data],
-              unread: 1
-            });
+            if (result.success) {
+              Vue.set(this.history, data.fromUser, {
+                student_id: data.fromUser,
+                nickName: result.data.nickName,
+                messages: [data],
+                user_pic: result.data.userPic,
+                unread: 1
+              });
+            } else {
+              this.$snackbar.error(result.message);
+            }
           })
-          .catch(err => {});
+          .catch(error => {
+            this.$snackbar.error(error.message);
+          });
       }
       setTimeout(() => {
         this.scrollToBottom();
       }, 30);
     },
-    sent(data) {
+    sent: function(data) {
       var currentMessages = this.history[this.currentMessageIndex];
       if (!currentMessages.messages) {
         currentMessages.messages = [];
       }
       Vue.set(currentMessages.messages, currentMessages.messages.length, data);
       this.message.message_content = "";
-      setTimeout(() => {
-        this.scrollToBottom();
-      }, 30);
     }
   },
   beforeDestroy() {
@@ -215,20 +253,33 @@ export default {
     },
 
     sendMessage() {
-      if (
-        this.message.message_content != null &&
-        this.message.message_content != ""
-      ) {
-        this.$socket.emit("sendMessage", this.message);
+      if (this.message.message != null && this.message.message != "") {
+        this.message.fromUser = this.user.student_id;
+        this.message.toUser = "17551119044";
+        this.message.ack = false;
+        this.message.id =
+          this.history[this.currentMessageIndex].messages.length + 1;
+        this.history[this.currentMessageIndex].messages.push(
+          JSON.parse(JSON.stringify(this.message))
+        );
+        this.$socket.emit("send_message", this.message, data => {
+          for (var message of this.history[data.toUser].messages) {
+            if (message.id == data.id) {
+              message.ack = true;
+              break;
+            }
+          }
+        });
+        console.log(this);
+        this.message.message = "";
+        setTimeout(() => {
+          this.scrollToBottom();
+        }, 30);
       }
     },
     switchMessages(index) {
       this.currentMessageIndex = index;
-      this.message.receive_user_id = this.history[this.currentMessageIndex].sid;
-      this.resetSetItem(
-        "unRead",
-        parseInt(sessionStorage.getItem("unRead")) - this.history[index].unread
-      );
+      // this.message.receive_user_id = this.history[this.currentMessageIndex].sid;
       this.history[index].unread = 0;
     },
     scrollToBottom() {

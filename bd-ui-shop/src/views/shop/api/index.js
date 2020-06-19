@@ -1,31 +1,31 @@
 import http from "@/base/api/public";
 import querystring from "querystring";
 import { systemConfig } from "@/../config/system";
-let apiUrl = systemConfig.bdApiUrl;
+let gatewayApiUrl = systemConfig.gatewayApiUrl;
 export const listCategoryStruct = () => {
-  return http.requestGet(apiUrl + "/api/shop/category/struct");
+  return http.requestGet(gatewayApiUrl + "/api/shop/category/struct");
 };
 
 export const listGoods = (page, size, params) => {
   let query = querystring.stringify(params);
   return http.requestGet(
-    apiUrl + "/api/es/good/list/" + page + "/" + size + "?" + query
+    gatewayApiUrl + "/api/es/good/list/" + page + "/" + size + "?" + query
   );
 };
 
 export const deleteFile = params => {
   let query = querystring.stringify(params);
-  return http.requestDelete(apiUrl + "/api/filesystem?" + query);
+  return http.requestDelete(gatewayApiUrl + "/api/filesystem?" + query);
 };
 
 export const insertGood = params => {
-  return http.requestPost(apiUrl + "/api/shop/good", params);
+  return http.requestPost(gatewayApiUrl + "/api/shop/good", params);
 };
 
 export const deleteGood = id => {
-  return http.requestDelete(apiUrl + "/api/shop/good/" + id);
+  return http.requestDelete(gatewayApiUrl + "/api/shop/good/" + id);
 };
 
 export const deleteGoods = ids => {
-  return http.requestDelete(apiUrl + "/api/shop/good/list/" + ids);
+  return http.requestDelete(gatewayApiUrl + "/api/shop/good/list/" + ids);
 };

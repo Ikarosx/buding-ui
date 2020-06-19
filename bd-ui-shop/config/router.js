@@ -5,47 +5,49 @@ import utilApi from "@/base/api/utils";
 let Base64 = require("js-base64").Base64;
 Vue.use(VueRouter);
 const router = new VueRouter({
-  routes: routes
+  routes: routes,
   // mode: "history"
 });
 
 router.beforeEach((to, from, next) => {
-  // console.log(to)
-  // console.log(from)
   //!***********身份校验***************
-  // let token = sessionStorage.getItem("token");
-  //   if (token != null) {
-  //     next();
-  //   } else {
-  utilApi
-    .getCurrentUser()
-    .then(result => {
-      if (result) {
-        console.log(result);
-        sessionStorage.setItem("token", result.access_token);
-        next();
-      } else {
-        //跳转到统一登陆
-        // next({path: "/login"})
-        window.location =
-          "http://oauth.budingcc.cn:40000/oauth/authorize?" +
-          "client_id=webBuding&" +
-          "redirect_uri=http://admin.budingcc.cn:40010/oauth/callback&" +
-          "response_type=code&" +
-          "state=" +
-          window.location.href;
-      }
-    })
-    .catch(err => {
-      window.location =
-        "http://oauth.budingcc.cn:40000/oauth/authorize?" +
-        "client_id=webBuding&" +
-        "redirect_uri=http://admin.budingcc.cn:40010/oauth/callback&" +
-        "response_type=code&" +
-        "state=" +
-        window.location.href;
-    });
-  //   }
+  var accessToken = window.localStorage.getItem("access_token");
+  if (accessToken != null && accessToken != "") {
+    next();
+  } else {
+    if (accessToken == undefined || accessToken == null || accessToken == "") {
+      loginApi
+        .getAccessToken()
+        .then((result) => {
+          if (result.success) {
+            window.localStorage.setItem("access_token", result.token);
+            next();
+          } else {
+            console.log(result.message);
+            // 获取accessToken失败
+            window.location =
+              "http://oauth.budingcc.cn:40000/oauth/authorize?" +
+              "client_id=webBuding&" +
+              "redirect_uri=http://admin.budingcc.cn:40010/oauth/callback&" +
+              "response_type=code&" +
+              "state=" +
+              window.location.href;
+          }
+        })
+        .catch((error) => {
+          console.log("获取accessToken失败");
+          console.log(error);
+          // 获取accessToken失败
+          window.location =
+            "http://oauth.budingcc.cn:40000/oauth/authorize?" +
+            "client_id=webBuding&" +
+            "redirect_uri=http://admin.budingcc.cn:40010/oauth/callback&" +
+            "response_type=code&" +
+            "state=" +
+            window.location.href;
+        });
+    }
+  }
 });
 // 授权
 // router.afterEach((to, from, next) => {
@@ -70,19 +72,19 @@ router.beforeEach((to, from, next) => {
 import axios from "axios";
 import * as loginApi from "@/base/api/login";
 // 添加请求拦截器
-// axios.interceptors.request.use(
-//   config => {
-//     // 在发送请求向header添加jwt
-//     let token = sessionStorage.getItem("token");
-//     if (token) {
-//       config.headers["Authorization"] = "bearer " + token;
-//     }
-//     return config;
-//   },
-//   error => {
-//     return Promise.reject(error);
-//   }
-// );
+axios.interceptors.request.use(
+  (config) => {
+    // 在发送请求向header添加jwt
+    let token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers["Authorization"] = "bearer " + token;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 // 响应拦截
 axios.interceptors.response.use(data => {
   console.log("data=");
@@ -103,10 +105,14 @@ axios.interceptors.response.use(data => {
         .catch(err => {
           this.$snackbar.error("注销失败");
         });
-    } else if (data.data.code && data.data.code == "10002") {
-      Message.error("您没有此操作的权限，请与客服联系！");
-    } else if (data.data.code && data.data.code == "10003") {
-      Message.error("认证被拒绝，请重新登录重试！");
+    } else if (data.data.code && data.data.code == "401") {
+      window.location =
+        "http://oauth.budingcc.cn:40000/oauth/authorize?" +
+        "client_id=webBuding&" +
+        "redirect_uri=http://admin.budingcc.cn:40010/oauth/callback&" +
+        "response_type=code&" +
+        "state=" +
+        window.location.href;
     }
   }
   return data;

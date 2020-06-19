@@ -14,7 +14,7 @@
         <v-img
           v-if="login"
           @click="navShow = !navShow"
-          src="http://fs.budingcc.cn/group1/M00/00/00/dU4Lkl5OjIeAG6SWAABMN7CE7-U017.jpg"
+          :src="userPic"
           width="50px"
           height="50px"
           style="border-radius:50%;"
@@ -55,33 +55,24 @@
 </style>
 <script>
 import Vue from "vue";
-import * as loginApi from "@/base/api/login"
+
+import * as loginApi from "@/base/api/login";
+import utilApi from "@/base/api/utils.js";
 export default {
   name: "Header",
   components: {},
   mounted() {
+    this.parseUser();
+
+    
     // this.$socket.emit("connect", {mac:1});
     // this.$socket.emit("chat", {userName:"Ikaros",content: "我老婆"});
-  },
-  sockets: {
-    connect(data) {
-      console.log("连接connect", data);
-    },
-    receiveChat(data) {
-      console.log("从服务器收到了", data);
-    },
-    reconnect(data) {
-      console.log("重新连接", data);
-      this.$socket.emit("connect", 1);
-    },
-    disconnect(data) {
-      console.log('socket断开连接');
-    }
   },
   data() {
     return {
       navShow: false,
       user: {},
+      userPic: "",
       navDrawerList: [
         {
           id: 1,
@@ -114,27 +105,51 @@ export default {
           title: "发布商品"
         }
       ],
-      login: true,
-      tip: {
-        status: false,
-        color: "success",
-        timeout: 2000,
-        message: ""
-      }
+      login: true
     };
   },
   methods: {
-    logout() {
-      loginApi.logout().then((result) => {
-        if(result.success){
-          window.location.href = "http://oauth.budingcc.cn:40000/logout?redirect_uri=" + window.location.href;
-        }else{
-          this.$snackbar.error("注销失败");
+    parseUser() {
+      var access_token = localStorage.getItem("access_token");
+      if (access_token == null || access_token == "") {
+        window.location.href =
+          "http://oauth.budingcc.cn:40000/logout?redirect_uri=" +
+          window.location.href;
+      } else {
+        var pattern = /.*\.(.*)\..*/g;
+        pattern.test(access_token);
+        let jwt = Base64.decode(RegExp.$1);
+        let jwtJson = JSON.parse(jwt);
+        let nowDate = Date.parse(new Date());
+        if (jwtJson.exp * 1000 < nowDate) {
+          // 过期了
+          localStorage.removeItem("user");
+          localStorage.removeItem("access_token");
+          window.location.href =
+            "http://oauth.budingcc.cn:40000/logout?redirect_uri=" +
+            window.location.href;
         }
-      }).catch((err) => {
-        this.$snackbar.error("注销失败");
-      });
-      
+        this.userPic = jwtJson.user_pic;
+        localStorage.setItem("user", jwt);
+      }
+    },
+    logout() {
+      loginApi
+        .logout()
+        .then(result => {
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("user");
+          if (result.success) {
+            window.location.href =
+              "http://oauth.budingcc.cn:40000/logout?redirect_uri=" +
+              window.location.href;
+          } else {
+            this.$snackbar.error("注销失败");
+          }
+        })
+        .catch(err => {
+          this.$snackbar.error("注销失败");
+        });
     },
     getNavData(i) {
       var _this = this;

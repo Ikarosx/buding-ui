@@ -88,7 +88,9 @@ export default {
     ImageUpload
   },
   beforeCreate() {},
-  mounted() {},
+  mounted() {
+    this.user = JSON.parse(localStorage.getItem("user"));
+  },
   data() {
     return {
       crop: {
