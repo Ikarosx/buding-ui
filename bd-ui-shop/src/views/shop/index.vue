@@ -101,6 +101,7 @@
                       flat
                       outlined
                       raised
+                      :elevation="hover?10:2"
                       width="320px"
                       class="ma-auto"
                       @click="openUrlNewWindow('http://budingcc.cn/good/detail/' + good.id + '.html')"
@@ -110,9 +111,9 @@
                         height="180px"
                         width="320px"
                         :class="{'imgHover': hover}"
-                        :src="'http://fs.budingcc.cn/' + good.imageUrl.split(',')[0]"
+                        :src="good.imageUrl==null?'':'http://fs.budingcc.cn/' + good.imageUrl.split(',')[0]"
                       >
-                        <v-card-title class="align-end fill-height">{{good.goodName}}</v-card-title>
+                        <v-card-title class="align-end fill-height" v-html="good.goodName"></v-card-title>
                       </v-img>
                       <v-card-text>{{good.description}}</v-card-text>
                       <v-card-actions>
@@ -126,12 +127,12 @@
                   </v-hover>
                 </v-col>
               </v-row>
-              <v-row class="text-center" justify="center">
-                <template>
-                  <div class="text-center">
+              <v-row justify="center">
+                <v-col cols="8">
+                  <v-container class="max-width">
                     <v-pagination v-model="page" :length="pageResult.totalPage"></v-pagination>
-                  </div>
-                </template>
+                  </v-container>
+                </v-col>
               </v-row>
             </v-container>
           </v-card>
@@ -153,6 +154,9 @@
 <style scoped>
 </style>
 <style>
+.eslight{
+  color:red;
+}
 .category .categorySelect {
   color: #ff9800 !important;
 }
@@ -216,13 +220,18 @@ export default {
         items: {}
       },
       page: 1,
-      size: 10,
+      size: 12,
       pageRequest: {
         keyword: "",
         sort: "price:-create_time:-",
         directCategoryId: ""
       }
     };
+  },
+  watch: {
+    page(newValue, oldValue) {
+      this.listGoods();
+    }
   },
   methods: {
     openUrlNewWindow(url) {
