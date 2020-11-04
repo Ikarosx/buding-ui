@@ -2,19 +2,7 @@ require('es6-promise').polyfill()
 import axios from 'axios'
 axios.defaults.withCredentials = true //跨域
 axios.defaults.timeout = 10000
-axios.defaults.headers.post['Content-Type'] = 'application/x-www=form-urlencoded'
-//axios.defaults.headers['Authorization'] = ''
-// 请求之前拦截
-/*axios.interceptors.request.use(config => {
-  // 判断token
-  //if (localStorage.token) {
-    config.headers.Authorization = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MjEwODA4ODYsInVzZXJfbmFtZSI6IjEyMyIsImF1dGhvcml0aWVzIjpbIlJPTEVfQURNSU4iLCJST0xFX1VTRVIiXSwianRpIjoiYTNiM2RiYjgtODJkYS00YWI2LWIwZjEtMWMyZDI5ZjM3MjExIiwiY2xpZW50X2lkIjoibWFuYWdlciIsInNjb3BlIjpbIm1hbmFnZXIiXX0.YivH7foaYfSJs9nPBR40TbJ7T0sGXBGaZV2g8Ivktiatdv0Sjkl4PbS3tsjSBtbyqLekYDLoWSojiDLyvgMy5qskeRLefVk4FYpEMzpxfb5JtaxoIRH0o-Re1MC2quq-J7kxRKAL1DUEmr-_GEEmB8zswYJNwYn3vZK0FMQlbsIty4LCfgIwXfH9XnPcUhojUUIBRUDT2W3s8j-qZQ-iKk1y2kesrXloiOtPEL5CljmlOyZ3GED_HNude5b41TqCQyv2VS1baE9DEPo-P0Hb33rSCMILk3rZg-hO7zuDMGfbGWKMQRgY6Fb2uUtqokYa5aLtXyEwW67FKAi2mK2cPA'
-  //}
-  return config
-},error =>{
-  alert("参数错误", 'fail')
-  return Promise.reject(error)
-})*/
+axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
 
 export default {
   //get请求

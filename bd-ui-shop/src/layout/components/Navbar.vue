@@ -144,11 +144,11 @@ export default {
               "http://oauth.budingcc.cn:40000/logout?redirect_uri=" +
               window.location.href;
           } else {
-            this.$snackbar.error("注销失败");
+            this.$message.error("注销失败");
           }
         })
         .catch(err => {
-          this.$snackbar.error("注销失败");
+          this.$message.error("注销失败");
         });
     },
     getNavData(i) {

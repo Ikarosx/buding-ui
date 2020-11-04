@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-img src="@/assets/img/1.png" class="bdBackground" height="100%" width="100%"></v-img>
     <v-container>
       <!-- 搜索、筛选和商品展示 -->
@@ -149,7 +149,7 @@
         </v-hover>
       </div>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 <style scoped>
 </style>
@@ -245,11 +245,11 @@ export default {
             this.category.list = result.queryResult.list[0].children;
             this.pageResult.total = result.queryResult.total;
           } else {
-            this.$snackbar.error(result.message);
+            this.$message.error(result.message);
           }
         })
         .catch(err => {
-          this.$snackbar.error(err);
+          this.$message.error(err);
         });
     },
     listGoods() {
@@ -260,14 +260,14 @@ export default {
             this.pageResult.items = result.queryResult.list;
             this.pageResult.totalPage = result.queryResult.totalPage;
             if (!result.queryResult.list) {
-              this.$snackbar.error("搜索不到商品");
+              this.$message.error("搜索不到商品");
             }
           } else {
-            this.$snackbar.error(result.message);
+            this.$message.error(result.message);
           }
         })
         .catch(err => {
-          this.$snackbar.error(err);
+          this.$message.error(err);
         });
     },
     clickCategoryOne(list, id) {

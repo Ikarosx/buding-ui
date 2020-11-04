@@ -1,17 +1,25 @@
 <template>
-  <v-content>
-    <v-img src="@/assets/img/1.png" class="bdBackground" height="100%" width="100%" v-if="!update"></v-img>
+  <v-main>
+    <v-img
+      src="@/assets/img/1.png"
+      class="bdBackground"
+      height="100%"
+      width="100%"
+      v-if="!update"
+    ></v-img>
     <v-container>
       <v-row justify="center">
         <v-col>
           <v-card>
             <v-card-text>
-              <v-card-title>{{ update?"修改商品":"发布商品"}}</v-card-title>
+              <v-card-title>{{
+                update ? "修改商品" : "发布商品"
+              }}</v-card-title>
               <v-form v-model="valid" ref="form">
                 <v-text-field
                   v-model="good.goodName"
                   :counter="20"
-                  :rules="[rules.required,rules.notSpecial]"
+                  :rules="[rules.required, rules.notSpecial]"
                   label="商品名称"
                   prepend-icon="mdi-pig-variant"
                   required
@@ -32,17 +40,22 @@
                 ></v-textarea>
                 <v-text-field
                   v-model="good.price"
-                  :rules="[rules.required,rules.numical]"
+                  :rules="[rules.required, rules.numical]"
                   label="商品价格"
                   prepend-icon="mdi-cash-usd"
                   required
                 ></v-text-field>
                 <v-icon>mdi-camera</v-icon>
-                <v-btn color="#FFD600" @click="crop.show = !crop.show" small>上传图片</v-btn>
+                <v-btn color="#FFD600" @click="crop.show = !crop.show" small
+                  >上传图片</v-btn
+                >
                 <v-list v-if="crop.list.length > 0">
                   <v-list-item v-for="item in crop.list" :key="item">
                     <v-list-item-content>
-                      <v-img :src="'http://fs.budingcc.cn/' + item" max-width="480"></v-img>
+                      <v-img
+                        :src="'http://fdfs.ikarosx.cn:8888/' + item"
+                        max-width="480"
+                      ></v-img>
                     </v-list-item-content>
                     <v-list-item-action>
                       <v-btn icon @click="deleteFile(item)">
@@ -69,7 +82,7 @@
         v-model="crop.show"
         :width="480"
         :height="270"
-        url="/api/filesystem"
+        url="http://gateway.budingcc.cn:30000/api/filesystem/upload"
         :params="crop.params"
         :headers="crop.headers"
         img-format="png"
@@ -78,7 +91,7 @@
         :noSquare="false"
       ></image-upload>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 <script>
 import qs from "qs";
@@ -89,7 +102,7 @@ import * as shopApi from "../api";
 export default {
   components: {
     "el-cascader": Cascader,
-    "image-upload": ImageUpload
+    "image-upload": ImageUpload,
   },
   created() {
     this.loadGoodCategory();
@@ -99,16 +112,16 @@ export default {
   watch: {
     good() {
       this.changeGood();
-    }
+    },
   },
   props: {
     update: {
       type: Boolean,
-      default: false
+      default: false,
     },
     title: {
       type: String,
-      default: "发布商品"
+      default: "发布商品",
     },
     good: {
       type: Object,
@@ -120,11 +133,11 @@ export default {
           price: "",
           imageUrl: "",
           userId: "8a80cb81704365b5017043674de40006", // TODO
-          userName: "",
-          schoolId: "1"
+          username: "",
+          schoolId: "1",
         };
-      }
-    }
+      },
+    },
   },
   computed: {},
   data() {
@@ -138,34 +151,35 @@ export default {
           label: "name",
           children: "children",
           // 任意一项
-          checkStrictly: false
-        }
+          checkStrictly: false,
+        },
       },
       crop: {
         show: false,
         params: {
           businessKey: "goodImage",
-          fileName: "fileName"
+          fileName: "fileName",
         },
         headers: {
-          smail: "*_~"
+          smail: "*_~",
+          Authorization: "Bearer " + localStorage.getItem("access_token")
         },
         langExt: {
-          preview: "图片预览"
+          preview: "图片预览",
         },
-        list: []
+        list: [],
       },
       valid: "",
       rules: {
-        required: value => !!value || "不能为空",
-        notSpecial: v =>
+        required: (value) => !!value || "不能为空",
+        notSpecial: (v) =>
           /^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(v) || "只能包含字母、数字或中文",
-        numical: v => /^[0-9]{1}[0-9]*[.]?[0-9]*$/.test(v) || "价格格式错误"
+        numical: (v) => /^[0-9]{1}[0-9]*[.]?[0-9]*$/.test(v) || "价格格式错误",
       },
     };
   },
   methods: {
-    srcFileSet(fileName, fileType, fileSize){
+    srcFileSet(fileName, fileType, fileSize) {
       this.crop.params.fileName = fileName;
     },
     changeGood() {
@@ -194,42 +208,49 @@ export default {
     },
     cropUploadSuccess(jsonData, field) {
       var json = qs.parse(jsonData);
-      this.crop.list.push(json.fileSystem.fileId);
-      this.$snackbar.success("上传图片成功");
+      console.log(json);
+      if (json.success) {
+        this.$message.success("上传图片成功");
+        this.crop.list.push(json.data.path);
+        this.crop.show = false;
+      } else {
+        this.$message.error(json.message);
+        this.crop.show = false;
+      }
     },
     cropUploadFail(status, field) {
-      this.$snackbar.error("上传图片失败");
+      this.$message.error("上传图片失败");
     },
     loadGoodCategory() {
       shopApi
         .listCategoryStruct()
-        .then(result => {
+        .then((result) => {
           if (result.success) {
             this.category.categoryList = this.handleLeaf(
               result.queryResult.list
             );
           } else {
-            this.$snackbar.error(result.message);
+            this.$message.error(result.message);
           }
         })
-        .catch(err => {
-          this.$snackbar.error(err.message);
+        .catch((err) => {
+          this.$message.error(err.message);
         });
     },
     deleteFile(id) {
       var params = { id: id };
       shopApi
         .deleteFile(params)
-        .then(result => {
+        .then((result) => {
           if (result.success) {
-            this.crop.list = this.crop.list.filter(item => item != id);
-            this.$snackbar.success(result.message);
+            this.crop.list = this.crop.list.filter((item) => item != id);
+            this.$message.success(result.message);
           } else {
-            this.$snackbar.error(result.message);
+            this.$message.error(result.message);
           }
         })
-        .catch(err => {
-          this.$snackbar.error(err.message);
+        .catch((err) => {
+          this.$message.error(err.message);
         });
     },
     insertGood() {
@@ -240,11 +261,11 @@ export default {
         !this.category.categoryActive ||
         this.category.categoryActive.length <= 1
       ) {
-        this.$snackbar.error("请选择商品分类，还有不要选择根节点da");
+        this.$message.error("请选择商品分类，还有不要选择根节点da");
         return;
       }
       if (!this.crop.list || this.crop.list.length == 0) {
-        this.$snackbar.error("请上传图片");
+        this.$message.error("请上传图片");
         return;
       }
       this.good.imageUrl = this.convertImgUrl();
@@ -252,17 +273,17 @@ export default {
       this.good.rootCategoryId = this.category.categoryActive[1];
       shopApi
         .insertGood(this.good)
-        .then(result => {
+        .then((result) => {
           if (result.success) {
-            this.$snackbar.success(result.message);
+            this.$message.success(result.message);
             this.crop.list = [];
             this.$refs["form"].reset();
           } else {
-            this.$snackbar.error(result.message);
+            this.$message.error(result.message);
           }
         })
-        .catch(err => {
-          this.$snackbar.error(err.message);
+        .catch((err) => {
+          this.$message.error(err.message);
         });
     },
     convertDirectCategoryId() {
@@ -289,7 +310,7 @@ export default {
         }
       }
       return json;
-    }
-  }
+    },
+  },
 };
 </script>

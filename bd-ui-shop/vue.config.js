@@ -4,6 +4,7 @@ module.exports = {
 
   devServer: {
     // proxy: proxyConfig.proxyList,
+    disableHostCheck: true,
     host: "budingcc.cn",
     port: 13000
   }

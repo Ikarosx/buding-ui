@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-img src="@/assets/img/1.png" class="bdBackground" height="100%" width="100%"></v-img>
     <v-container>
       <v-row>
@@ -72,7 +72,7 @@
         :noSquare="true"
       ></image-upload>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 <style>
 .hoverPointer:hover {
@@ -128,10 +128,10 @@ export default {
     cropUploadSuccess(jsonData, field) {
       var json = qs.parse(jsonData);
       this.imageUrl = json.fileSystem.fileId;
-      this.$snackbar.success("上传图片成功");
+      this.$message.success("上传图片成功");
     },
     cropUploadFail(status, field) {
-      this.$snackbar.error("上传图片失败");
+      this.$message.error("上传图片失败");
     },
     updateUser() {}
   }

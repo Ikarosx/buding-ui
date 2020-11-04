@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-img src="@/assets/img/1.png" class="bdBackground" height="100%" width="100%"></v-img>
     <v-container>
       <v-row>
@@ -88,7 +88,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 <style>
 .chat_box::-webkit-scrollbar {
@@ -211,11 +211,11 @@ export default {
                 unread: 1
               });
             } else {
-              this.$snackbar.error(result.message);
+              this.$message.error(result.message);
             }
           })
           .catch(error => {
-            this.$snackbar.error(error.message);
+            this.$message.error(error.message);
           });
       }
       setTimeout(() => {

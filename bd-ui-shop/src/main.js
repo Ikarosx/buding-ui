@@ -3,11 +3,17 @@ import App from "./App.vue";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
 import router from "@/../config/router";
+import { Button,  Message} from "element-ui"
+
+Message.install = function (Vue, options) {
+  Vue.prototype.$message = Message
+}
+
+Vue.use(Button)
+Vue.use(Message)
+
 Vue.config.productionTip = false;
 
-// 引入snackbar
-import snackbar from "@/base/components/snackbar";
-Vue.prototype.$snackbar = snackbar;
 // 引入socketio
 import VueSocketIO from "vue-socket.io";
 let access_token = localStorage.getItem("access_token");
@@ -32,3 +38,5 @@ new Vue({
   store,
   render: (h) => h(App),
 }).$mount("#app");
+
+

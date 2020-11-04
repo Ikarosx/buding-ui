@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-img src="@/assets/img/1.png" class="bdBackground" height="100%" width="100%"></v-img>
     <v-container>
       <v-row>
@@ -47,7 +47,7 @@
         <good :good="operateItem" :update="true"></good>
       </v-dialog>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 <style>
 .notBoxShadow {
@@ -111,11 +111,11 @@ export default {
           if (result.success) {
             this.table.desserts = result.queryResult.list;
           } else {
-            this.$snackbar.error(result.message);
+            this.$message.error(result.message);
           }
         })
         .catch(err => {
-          this.$snackbar.error(err.message);
+          this.$message.error(err.message);
         });
     },
     deleteGoods() {
@@ -128,14 +128,14 @@ export default {
         .deleteGoods(ids)
         .then(result => {
           if (result.success) {
-            this.$snackbar.success(result.message);
+            this.$message.success(result.message);
             this.listGoods();
           } else {
-            this.$snackbar.error(result.message);
+            this.$message.error(result.message);
           }
         })
         .catch(err => {
-          this.$snackbar.error(err.message);
+          this.$message.error(err.message);
         });
     },
     editItem(item) {
@@ -151,15 +151,15 @@ export default {
         .deleteGood(this.operateItem.id)
         .then(result => {
           if (result.success) {
-            this.$snackbar.success(result.message);
+            this.$message.success(result.message);
             this.dialog.delDialog = false;
             this.listGoods();
           } else {
-            this.$snackbar.error(result.message);
+            this.$message.error(result.message);
           }
         })
         .catch(err => {
-          this.$snackbar.error(err.message);
+          this.$message.error(err.message);
         });
     }
   }

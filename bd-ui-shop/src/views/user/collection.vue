@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-img src="@/assets/img/1.png" class="bdBackground" height="100%" width="100%"></v-img>
     <v-container>
       <v-row>
@@ -67,7 +67,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script>

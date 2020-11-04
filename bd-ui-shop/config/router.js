@@ -23,7 +23,7 @@ router.beforeEach((to, from, next) => {
             window.localStorage.setItem("access_token", result.token);
             next();
           } else {
-            console.log(result.message);
+            console.log('获取accessToken失败');
             // 获取accessToken失败
             window.location =
               "http://oauth.budingcc.cn:40000/oauth/authorize?" +
@@ -99,11 +99,11 @@ axios.interceptors.response.use(data => {
               "http://oauth.budingcc.cn:40000/logout?redirect_uri=" +
               window.location.href;
           } else {
-            this.$snackbar.error("注销失败");
+            this.$message.error("注销失败");
           }
         })
         .catch(err => {
-          this.$snackbar.error("注销失败");
+          this.$message.error("注销失败");
         });
     } else if (data.data.code && data.data.code == "401") {
       window.location =
