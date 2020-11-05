@@ -6,7 +6,7 @@ let Base64 = require("js-base64").Base64;
 Vue.use(VueRouter);
 const router = new VueRouter({
   routes: routes,
-  // mode: "history"
+  mode: "history"
 });
 
 router.beforeEach((to, from, next) => {
@@ -87,10 +87,9 @@ axios.interceptors.request.use(
 );
 // 响应拦截
 axios.interceptors.response.use(data => {
-  console.log("data=");
   console.log(data);
   if (data && data.data) {
-    if (data.data.code && data.data.code == "40001") {
+    if (data.data.code && (data.data.code == "40001" || data.data.code == "30002")) {
       loginApi
         .logout()
         .then(result => {

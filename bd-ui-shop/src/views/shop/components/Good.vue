@@ -239,19 +239,20 @@ export default {
     },
     deleteFile(id) {
       var params = { id: id };
-      shopApi
-        .deleteFile(params)
-        .then((result) => {
-          if (result.success) {
-            this.crop.list = this.crop.list.filter((item) => item != id);
-            this.$message.success(result.message);
-          } else {
-            this.$message.error(result.message);
-          }
-        })
-        .catch((err) => {
-          this.$message.error(err.message);
-        });
+      this.crop.list = this.crop.list.filter((item) => item != id);
+      // shopApi
+      //   .deleteFile(params)
+      //   .then((result) => {
+      //     if (result.success) {
+      //       this.crop.list = this.crop.list.filter((item) => item != id);
+      //       this.$message.success(result.message);
+      //     } else {
+      //       this.$message.error(result.message);
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     this.$message.error(err.message);
+      //   });
     },
     insertGood() {
       if (!this.$refs.form.validate()) {

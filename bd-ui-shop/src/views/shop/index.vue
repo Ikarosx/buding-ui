@@ -111,7 +111,7 @@
                         height="180px"
                         width="320px"
                         :class="{'imgHover': hover}"
-                        :src="good.imageUrl==null?'':'http://fs.budingcc.cn/' + good.imageUrl.split(',')[0]"
+                        :src="good.imageUrl==null?'':'http://fdfs.ikarosx.cn:8888/' + good.imageUrl.split(',')[0]"
                       >
                         <v-card-title class="align-end fill-height" v-html="good.goodName"></v-card-title>
                       </v-img>
