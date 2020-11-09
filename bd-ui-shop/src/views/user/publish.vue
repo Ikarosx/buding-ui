@@ -1,6 +1,11 @@
 <template>
   <v-main>
-    <v-img src="@/assets/img/1.png" class="bdBackground" height="100%" width="100%"></v-img>
+    <v-img
+      src="@/assets/img/1.png"
+      class="bdBackground"
+      height="100%"
+      width="100%"
+    ></v-img>
     <v-container>
       <v-row>
         <v-col>
@@ -18,14 +23,18 @@
               no-data-text="你还没有发布商品"
             >
               <template v-slot:item.operation="{ item }">
-                <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
+                <v-icon small class="mr-2" @click="editItem(item)"
+                  >mdi-pencil</v-icon
+                >
                 <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
               </template>
 
               <template v-slot:body.append>
                 <tr>
                   <td colspan="4"></td>
-                  <v-btn color="error" class="ma-2" @click="deleteGoods">批量删除</v-btn>
+                  <v-btn color="error" class="ma-2" @click="deleteGoods"
+                    >批量删除</v-btn
+                  >
                 </tr>
               </template>
             </v-data-table>
@@ -38,8 +47,12 @@
           <v-card-text>你确定要删除咩</v-card-text>
           <v-card-actions>
             <div class="flex-grow-1"></div>
-            <v-btn color="green darken-1" text @click="dialog.delDialog = false">取消</v-btn>
-            <v-btn color="error darken-1" text @click="deleteItemOk">删除</v-btn>
+            <v-btn color="green darken-1" text @click="dialog.delDialog = false"
+              >取消</v-btn
+            >
+            <v-btn color="error darken-1" text @click="deleteItemOk"
+              >删除</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -60,7 +73,7 @@ import Good from "@/views/shop/components/Good";
 import * as shopApi from "@/views/shop/api";
 export default {
   components: {
-    Good
+    Good,
   },
   name: "myRelease",
   created() {
@@ -73,48 +86,48 @@ export default {
       operateIndex: "",
       dialog: {
         delDialog: false,
-        editDialog: false
+        editDialog: false,
       },
       selectedGoodList: [],
       page: 1,
       size: 10,
       pageRequest: {
-        userId: "8a80cb81704365b5017043674de40006"
+        userId: "8a80cb81704365b5017043674de40006",
       },
       valid: "",
       rules: {
-        required: value => !!value || "不能为空",
-        imgTypeAndSize: v => this.validImgs(),
-        notSpecial: v =>
+        required: (value) => !!value || "不能为空",
+        imgTypeAndSize: (v) => this.validImgs(),
+        notSpecial: (v) =>
           /^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(v) || "只能包含字母、数字或中文",
-        numical: v => /^[0-9]{1}[0-9]*[.]?[0-9]*$/.test(v) || "价格格式错误"
+        numical: (v) => /^[0-9]{1}[0-9]*[.]?[0-9]*$/.test(v) || "价格格式错误",
       },
       table: {
         headers: [
           {
             text: "商品ID",
-            value: "id"
+            value: "id",
           },
           { text: "名称", value: "goodName" },
           { text: "价格", value: "price" },
-          { text: "操作", value: "operation" }
+          { text: "操作", value: "operation" },
         ],
-        desserts: []
-      }
+        desserts: [],
+      },
     };
   },
   methods: {
     listGoods() {
       shopApi
         .listGoods(this.page, this.size, this.pageRequest)
-        .then(result => {
+        .then((result) => {
           if (result.success) {
             this.table.desserts = result.queryResult.list;
           } else {
             this.$message.error(result.message);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.$message.error(err.message);
         });
     },
@@ -126,15 +139,18 @@ export default {
       ids = ids.substring(0, ids.length - 1);
       shopApi
         .deleteGoods(ids)
-        .then(result => {
+        .then((result) => {
           if (result.success) {
             this.$message.success(result.message);
-            this.listGoods();
+            var _this = this;
+            setTimeout(function() {
+              _this.listGoods();
+            }, 2000);
           } else {
             this.$message.error(result.message);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.$message.error(err.message);
         });
     },
@@ -149,19 +165,23 @@ export default {
     deleteItemOk() {
       shopApi
         .deleteGood(this.operateItem.id)
-        .then(result => {
+        .then((result) => {
           if (result.success) {
             this.$message.success(result.message);
             this.dialog.delDialog = false;
-            this.listGoods();
+            var _this = this;
+            // 太快的话es那边还没有更新
+            setTimeout(function() {
+              _this.listGoods();
+            }, 2000);
           } else {
             this.$message.error(result.message);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.$message.error(err.message);
         });
-    }
-  }
+    },
+  },
 };
 </script>

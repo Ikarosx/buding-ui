@@ -8,3 +8,7 @@ export const getUserProfile = (studentId) => {
     gatewayApiUrl + bdApiUrlPre + "/ucenter/user/simple/" + studentId
   );
 };
+
+export const updateUser = params => {
+  return http.requestPut(gatewayApiUrl + "/ucenter/user/", params);
+}

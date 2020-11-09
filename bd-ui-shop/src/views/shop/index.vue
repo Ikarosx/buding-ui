@@ -23,7 +23,7 @@
               <v-btn
                 small
                 text
-                :class="category.selectedOneId == 0 ? 'categorySelect' : ''"
+                :class="category.selectedOneId == '' ? 'categorySelect' : ''"
                 @click="clickCategoryOne(null, '')"
               >全部</v-btn>
               <v-btn
@@ -115,7 +115,7 @@
                       >
                         <v-card-title class="align-end fill-height" v-html="good.goodName"></v-card-title>
                       </v-img>
-                      <v-card-text>{{good.description}}</v-card-text>
+                      <v-card-text>{{good.description.length > 50 ? good.description.substr(0, 50) + "...":good.description}}</v-card-text>
                       <v-card-actions>
                         <div class="flex-grow-1"></div>
                         <!-- 上架日期 -->
@@ -210,9 +210,9 @@ export default {
         list: [],
         listTwo: [],
         listThree: [],
-        selectedOneId: "0",
-        selectedTwoId: "-1",
-        selectedThreeId: "-2"
+        selectedOneId: "",
+        selectedTwoId: "",
+        selectedThreeId: ""
       },
       pageResult: {
         total: 1,
@@ -273,6 +273,7 @@ export default {
     clickCategoryOne(list, id) {
       this.category.selectedOneId = id;
       this.category.selectedTwoId = id;
+      this.category.selectedThreeId = id;
       this.category.listTwo = list;
       this.pageRequest.directCategoryId = id;
       this.listGoods();

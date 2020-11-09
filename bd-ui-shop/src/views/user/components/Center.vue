@@ -24,7 +24,7 @@
                     <v-icon>mdi-face-profile</v-icon>
                     <v-img
                       @click="crop.show = true"
-                      :src="'http://fs.budingcc.cn/'+imageUrl"
+                      :src="imageUrl"
                       style="width:50px;height:50px;border-radius:50%;"
                       max-width="50"
                       class="elevation-3 hoverPointer"
@@ -49,7 +49,7 @@
               </v-card-text>
               <v-card-actions>
                 <div class="flex-grow-1"></div>
-                <v-btn color="#FFD600" v-on="on" @click="updateUser">更新</v-btn>
+                <v-btn color="#FFD600" @click="updateUser">更新</v-btn>
               </v-card-actions>
             </v-card>
           </v-hover>
@@ -82,6 +82,8 @@
 <script>
 import qs from "qs";
 import ImageUpload from "vue-image-crop-upload";
+import * as userApi from "../api"
+
 export default {
   name: "center",
   components: {
@@ -90,6 +92,8 @@ export default {
   beforeCreate() {},
   mounted() {
     this.user = JSON.parse(localStorage.getItem("user"));
+    console.log(this.user);
+    this.imageUrl = this.user['user_pic'];
   },
   data() {
     return {
@@ -102,7 +106,7 @@ export default {
         list: []
       },
       showPassword: false,
-      imageUrl: "group1/M00/00/00/dU4Lkl5OjIeAG6SWAABMN7CE7-U017.jpg",
+      imageUrl: "",
       user: {},
       rules: {
         required: v => !!v || "不能为空",
@@ -133,7 +137,9 @@ export default {
     cropUploadFail(status, field) {
       this.$message.error("上传图片失败");
     },
-    updateUser() {}
+    updateUser() {
+
+    }
   }
 };
 </script>

@@ -276,7 +276,7 @@ export default {
         .insertGood(this.good)
         .then((result) => {
           if (result.success) {
-            this.$message.success(result.message);
+            this.$message.success("发布商品成功，请等待1-2分钟后台处理");
             this.crop.list = [];
             this.$refs["form"].reset();
           } else {
