@@ -10,21 +10,34 @@
         <v-btn text>布叮记词</v-btn>
       </v-toolbar-items>
       <div class="flex-grow-1"></div>
-      <div style="position:relative;">
+      <div style="position: relative">
         <v-img
           v-if="login"
           @click="navShow = !navShow"
           :src="userPic"
           width="50px"
           height="50px"
-          style="border-radius:50%;"
+          style="border-radius: 50%"
           class="elevation-5"
         ></v-img>
+
         <v-row v-else align="center">请登录！</v-row>
+        <v-avatar
+          color="red"
+          size="10"
+          v-if="unread == true"
+          style="position: absolute; top: 0; right: 0px"
+        ></v-avatar>
       </div>
     </v-app-bar>
     <!-- navigation -->
-    <v-navigation-drawer app right color="#FFC400" v-model="navShow" v-if="login">
+    <v-navigation-drawer
+      app
+      right
+      color="#FFC400"
+      v-model="navShow"
+      v-if="login"
+    >
       <v-list>
         <v-list-item
           v-for="item in navDrawerList"
@@ -55,16 +68,16 @@
 </style>
 <script>
 import Vue from "vue";
+import { mapState, mapMutations } from "vuex";
 
 import * as loginApi from "@/base/api/login";
 import utilApi from "@/base/api/utils.js";
 export default {
   name: "Header",
   components: {},
+  computed: mapState(["unread"]),
   mounted() {
     this.parseUser();
-
-    
     // this.$socket.emit("connect", {mac:1});
     // this.$socket.emit("chat", {userName:"Ikaros",content: "我老婆"});
   },
@@ -78,34 +91,34 @@ export default {
           id: 1,
           href: "/user/center",
           icon: "mdi-account",
-          title: "个人中心"
+          title: "个人中心",
         },
         {
           id: 2,
           href: "/user/collection",
           icon: "mdi-heart",
-          title: "我的收藏"
+          title: "我的收藏",
         },
         {
           id: 3,
           href: "/user/dialog",
           icon: "mdi-chat",
-          title: "我的聊天"
+          title: "我的聊天",
         },
         {
           id: 4,
           href: "/user/publish",
           icon: "mdi-equalizer",
-          title: "我的发布"
+          title: "我的发布",
         },
         {
           id: 5,
           href: "/good/add",
           icon: "mdi-arrow-up",
-          title: "发布商品"
-        }
+          title: "发布商品",
+        },
       ],
-      login: true
+      login: true,
     };
   },
   methods: {
@@ -136,7 +149,7 @@ export default {
     logout() {
       loginApi
         .logout()
-        .then(result => {
+        .then((result) => {
           localStorage.removeItem("access_token");
           localStorage.removeItem("user");
           if (result.success) {
@@ -147,7 +160,7 @@ export default {
             this.$message.error("注销失败");
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.$message.error("注销失败");
         });
     },
@@ -155,17 +168,17 @@ export default {
       var _this = this;
       this.$axios({
         method: "get",
-        url: "/dict?dict_type_code=" + i
+        url: "/dict?dict_type_code=" + i,
       })
-        .then(res => {
+        .then((res) => {
           if (i == 1) {
             _this.navData1 = res.data;
           } else {
             _this.navData2 = res.data;
           }
         })
-        .catch(error => {});
-    }
-  }
+        .catch((error) => {});
+    },
+  },
 };
 </script>

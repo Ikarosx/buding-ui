@@ -3,7 +3,8 @@ import Vue from "vue";
 import routes from "@/base/router";
 import utilApi from "@/base/api/utils";
 let Base64 = require("js-base64").Base64;
-
+// 引入socketio
+import VueSocketIO from "vue-socket.io";
 Vue.use(VueRouter);
 const router = new VueRouter({
     routes: routes,
@@ -13,8 +14,28 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
     // ***********身份校验***************
     var accessToken = window.localStorage.getItem("access_token");
+
     if (accessToken != null && accessToken != "") {
-        
+        if (
+            Vue.prototype.$socket == null ||
+            Vue.prototype.$socket.disconnected == true
+        ) {
+            let vueSocketIO = new VueSocketIO({
+                debug: true,
+                connection:
+                    "http://budingcc.cn:32001?access_token=" + accessToken,
+                options: {
+                    autoConnect: true,
+                    transports: ["websocket"],
+                },
+                vuex: {
+                    actionPrefix: "SOCKET_",
+                    mutationPrefix: "SOCKET_",
+                },
+            });
+            Vue.use(vueSocketIO);
+        }
+
         next();
     } else {
         if (

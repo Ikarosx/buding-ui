@@ -129,17 +129,9 @@ import * as userApi from "../api";
 export default {
   name: "chat",
   created() {
-    if (this.$socket.disconnected == true) {
-      console.log(this.$socket);
-      this.$socket.query = "access_token=" + localStorage.getItem("access_token");
-      this.$socket.connect();
-      console.log(this.$socket);
-    }
-    // this.user = $qs.parse(sessionStorage.getItem("loginInfo"));
-    // this.message.send_user_id = this.user.sid;
-    // this.history = $qs.parse(localStorage.getItem("history-" + this.user.sid));
   },
   mounted() {
+    this.$store.commit("setUnread", false);
     let user = localStorage.getItem("user");
     let userJson = JSON.parse(user);
     this.user = userJson;
@@ -151,10 +143,6 @@ export default {
         "history-" + this.user.id,
         JSON.stringify(this.history)
       );
-    }
-    console.log(this.history);
-    if (this.$socket.disconnected) {
-      this.$socket.connect();
     }
     window.addEventListener("beforeunload", e => this.beforeunloadFn(e));
     // this.resetSetItem(
@@ -224,7 +212,6 @@ export default {
   sockets: {
     // 获取未读信息，在首次连接时后端会发送此条消息给客户端
     get_unread: function (data) {
-      console.log(1)
       for (let message of data) {
         message.ack = true;
         this.handleReceiveMessage(message);
